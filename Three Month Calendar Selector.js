@@ -1,5 +1,5 @@
 //--------------------------
-// Three Month Calendar v1.0
+// Three Month Calendar v1.1
 // To be used in conjunction with Qualtrics Survey Software and other code
 // If you don't know me, but are using this code, please get in touch! I'd love to hear from you.
 // Also contact with bugs, feature suggestions or to tell me about how to improve.
@@ -88,6 +88,7 @@ YUI().use('calendar', 'datatype-date', function (Y) {
             }
         });
 
+		/*
         // Get a reference to Y.DataType.Date
         var dtdate = Y.DataType.Date;
 
@@ -102,11 +103,14 @@ YUI().use('calendar', 'datatype-date', function (Y) {
         nextMonth.on("blur", function () {
             nextMonth.deselectDates();
         });
+		*/
 
         // Listen to calendar's selectionChange event to pass selection to field
+		// Ordering is important, because deselectDates() is a selectionChange
         prevMonth.on("selectionChange", function (ev) {
+			var newDate = ev.newSelection[0];
 			dateSlot = $("QR~"+dateEnter);
-            var newDate = ev.newSelection[0];
+            
             Y.one("#dateSlot").setHTML(dtdate.format(newDate));
         });
 
