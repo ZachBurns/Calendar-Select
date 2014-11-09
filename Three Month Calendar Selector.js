@@ -42,14 +42,16 @@
 //JavaScript
 Qualtrics.SurveyEngine.addOnload(function()
 {	
+	var dateSlot = $("QR~"+this.questionId);
 	var rightNow = new Date(); //current date global
 	var d = new Date();
 	var calYear = d.getFullYear();
 	var calMonth = d.getMonth();
 	var calDate = d.getDate();
-	var dateSlot = null;
+    var changeTo = null;
+    var changeState = 1;
 
-YUI().use('calendar', 'datatype-date', function (Y) {
+YUI().use('calendar', 'datatype-date', 'node', function (Y) {
     // Creates 3 new calendar instances
     var prevMonth = new Y.Calendar({
         contentBox: "#prevMonth",
@@ -88,43 +90,53 @@ YUI().use('calendar', 'datatype-date', function (Y) {
             }
         });
 
-		/*
         // Get a reference to Y.DataType.Date
         var dtdate = Y.DataType.Date;
+    	
+        prevMonth.on("selectionChange",  function upDate(ev){
+              if (changeState == 1){
+                var changeTo = dtdate.format(ev.newSelection[0], {format: "%b %d, %Y"});
+                dateSlot.value = changeTo;
+                changeState = changeState + 1;
+                thisMonth.deselectDates();
+                nextMonth.deselectDates();
+            } else {
+                changeState = changeState + 1;
+            }
+            if (changeState == 4){
+                changeState = 1;
+            }
+        } );
 
-        prevMonth.on("blur", function () {
-            prevMonth.deselectDates();
-        });
-
-        thisMonth.on("blur", function () {
-            thisMonth.deselectDates();
-        });
-
-        nextMonth.on("blur", function () {
-            nextMonth.deselectDates();
-        });
-		*/
-
-        // Listen to calendar's selectionChange event to pass selection to field
-		// Ordering is important, because deselectDates() is a selectionChange
-        prevMonth.on("selectionChange", function (ev) {
-			var newDate = ev.newSelection[0];
-			dateSlot = $("QR~"+dateEnter);
-            
-            Y.one("#dateSlot").setHTML(dtdate.format(newDate));
-        });
-
-        thisMonth.on("selectionChange", function (ev) {
-			dateSlot = $("QR~"+dateEnter);
-            var newDate = ev.newSelection[0];
-            Y.one("#dateSlot").setHTML(dtdate.format(newDate));
-        });
-
-        nextMonth.on("selectionChange", function (ev) {
-			dateSlot = $("QR~"+dateEnter);
-            var newDate = ev.newSelection[0];
-            Y.one("#dateSlot").setHTML(dtdate.format(newDate));
-        });
+        thisMonth.on("selectionChange",  function upDate(ev){
+            if (changeState == 1){
+                var changeTo = dtdate.format(ev.newSelection[0], {format: "%b %d, %Y"});
+                dateSlot.value = changeTo;
+                changeState = changeState + 1;
+                prevMonth.deselectDates();
+                nextMonth.deselectDates();
+            } else {
+                changeState = changeState + 1;
+            }
+            if (changeState == 4){
+                changeState = 1;
+            }
+        } );
+    
+        nextMonth.on("selectionChange",  function upDate(ev){
+              if (changeState == 1){
+                var changeTo = dtdate.format(ev.newSelection[0], {format: "%b %d, %Y"});
+                dateSlot.value = changeTo;
+                changeState = changeState + 1;
+                prevMonth.deselectDates();
+                thisMonth.deselectDates();
+            } else {
+                changeState = changeState + 1;
+            }
+            if (changeState == 4){
+                changeState = 1;
+            }
+        } );
 
     });
 	
